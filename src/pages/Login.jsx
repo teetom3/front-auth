@@ -43,8 +43,6 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        const data = await response.json();
-        console.log(data);
         const errorCustom = new Error(data.error || "An error occured");
         errorCustom.status = response.status;
         throw errorCustom;
