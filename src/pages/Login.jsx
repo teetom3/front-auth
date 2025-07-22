@@ -1,21 +1,62 @@
 import { useState } from "react";
-import { Form, Button, Container, Card, Row, Col } from "react-bootstrap";
-
+import {
+  Form,
+  Button,
+  Container,
+  Card,
+  Row,
+  Col,
+  Alert,
+} from "react-bootstrap";
+import { useNavigate } from "react-router";
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-
-  const handleSubmit = (e) => {
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        "https://offers-api.digistos.com/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status == 401) {
+          setError("Email ou mot de passe incorrect");
+          return;
+        }
+        throw new Error("une Erreur est survenue lors de l'inscription");
+      }
+      console.log("Connexion réussie:", data);
+
+      navigate("/offres/professionnelles");
+    } catch (error) {
+      setError("Une erreur est survenue");
+      console.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
     // Handle login logic here
     // Don't forget to handle errors, both for yourself (dev) and for the client (via a Bootstrap Alert):
     //   - Show an error if credentials are invalid
@@ -29,6 +70,11 @@ const LoginPage = () => {
       <Row className="w-100 justify-content-center">
         <Col xs={12} sm={8} md={6} lg={4}>
           <Card className="p-4 shadow-lg">
+            {error && (
+              <Alert variant="danger" className="mb-3">
+                {error}
+              </Alert>
+            )}
             <h1 className="text-center mb-4">Se connecter</h1>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="loginEmail">
@@ -53,8 +99,13 @@ const LoginPage = () => {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="w-100">
-                Se connecter
+              <Button
+                variant="primary"
+                type="submit"
+                className="w-100"
+                disabled={isLoading}
+              >
+                {isLoading ? "Connexion en cours" : "Se Connecter"}
               </Button>
             </Form>
           </Card>
