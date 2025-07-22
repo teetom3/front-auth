@@ -51,7 +51,6 @@ const LoginPage = () => {
 
       navigate("/offres/professionnelles");
     } catch (error) {
-      setError(error.message);
       console.error(`${error.message} and ${error.status}`);
       if (error.status == 401) {
         setError("Identifiants invalides.");
