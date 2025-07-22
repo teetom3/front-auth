@@ -33,6 +33,7 @@ const LoginPage = () => {
         {
           method: "POST",
           headers: {
+            Accept: "application/json",
             "Content-type": "application/json",
           },
           body: JSON.stringify(formData),
@@ -42,18 +43,23 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        if (response.status == 401) {
-          setError("Email ou mot de passe incorrect");
-          return;
-        }
-        throw new Error("une Erreur est survenue lors de l'inscription");
+        const data = await response.json();
+        console.log(data);
+        const errorCustom = new Error(data.error || "An error occured");
+        errorCustom.status = response.status;
+        throw errorCustom;
       }
       console.log("Connexion réussie:", data);
 
       navigate("/offres/professionnelles");
     } catch (error) {
-      setError("Une erreur est survenue");
-      console.error(error.message);
+      setError(error.message);
+      console.error(`${error.message} and ${error.status}`);
+      if (error.status == 401) {
+        setError("Identifiants invalides.");
+      } else {
+        setError("Une erreur est survenue lors de la connexion.");
+      }
     } finally {
       setIsLoading(false);
     }
