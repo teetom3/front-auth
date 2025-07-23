@@ -1,18 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useNavigate, Outlet } from "react-router";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../store/authSlice.js";
 const PrivateRoute = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
   const [canAccess, setCanAccess] = useState(false);
   useEffect(() => {
-    const auth = JSON.parse(localStorage.getItem("auth"));
-    const isValid = auth && new Date(auth.expiresAt) > new Date();
+    const isValid = auth.token && new Date(auth.expiresAt) > new Date();
     if (!isValid) {
-      localStorage.removeItem("auth");
+      dispatch(logout());
       navigate("/connexion");
     } else {
       setCanAccess(true);
+
+      22;
     }
-  }, [navigate]);
+  }, [auth, navigate]);
   if (!canAccess) return null; // Tant qu’on n’a pas vérifié, on bloque
   return <Outlet />;
 };

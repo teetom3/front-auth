@@ -9,6 +9,9 @@ import {
   Alert,
 } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import { loginSuccess } from "../store/authSlice";
+import { useDispatch } from "react-redux";
+
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -21,6 +24,7 @@ const LoginPage = () => {
       [e.target.name]: e.target.value,
     });
   };
+  const dispatch = useDispatch();
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
@@ -48,9 +52,8 @@ const LoginPage = () => {
         throw errorCustom;
       }
       console.log("Connexion réussie:", data);
-      localStorage.setItem(
-        "auth",
-        JSON.stringify({
+      dispatch(
+        loginSuccess({
           token: data.access_token,
           expiresAt: new Date(
             Date.now() + data.expires_in * 1000

@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
 const Logout = () => {
   const navigate = useNavigate();
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
   useEffect(() => {
     const handleLogout = async () => {
-      const auth = JSON.parse(localStorage.getItem("auth"));
-      const token = auth?.token;
       // (1) Appel API pour notifier la déconnexion
 
       try {
@@ -17,9 +19,7 @@ const Logout = () => {
               method: "POST",
               headers: {
                 Accept: "application/json",
-                Authorization: `Bearer ${
-                  JSON.parse(localStorage.getItem("auth"))?.token
-                }`,
+                Authorization: `Bearer ${token}`,
               },
             }
           );
@@ -37,7 +37,7 @@ const Logout = () => {
       } catch (error) {
         console.error(`${error.message}`);
       } finally {
-        localStorage.removeItem("auth");
+        dispatch(logout());
         navigate("/connexion");
       }
     };
