@@ -48,7 +48,15 @@ const LoginPage = () => {
         throw errorCustom;
       }
       console.log("Connexion réussie:", data);
-
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          token: data.access_token,
+          expiresAt: new Date(
+            Date.now() + data.expires_in * 1000
+          ).toISOString(),
+        })
+      );
       navigate("/offres/professionnelles");
     } catch (error) {
       console.error(`${error.message} and ${error.status}`);
