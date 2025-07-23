@@ -15,8 +15,8 @@ const OfferProList = () => {
           {
             headers: {
               Accept: "application/json",
-              credentials: "include",
             },
+            credentials: "include",
           }
         );
 
