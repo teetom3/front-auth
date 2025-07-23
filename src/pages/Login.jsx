@@ -37,11 +37,19 @@ const LoginPage = () => {
             "Content-type": "application/json",
           },
           body: JSON.stringify(formData),
+          credentials: "include",
         }
       );
 
       const data = await response.json();
-
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({
+          expiresAt: new Date(
+            Date.now() + data.expires_in * 1000
+          ).toISOString(),
+        })
+      );
       if (!response.ok) {
         const errorCustom = new Error(data.error || "An error occured");
         errorCustom.status = response.status;
